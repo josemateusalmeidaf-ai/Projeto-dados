@@ -1,0 +1,12 @@
+{
+  "name": "sitedados",
+  "version": "1.0.0",
+  "description": "Premier League analytics dashboard",
+  "private": true,
+  "scripts": {
+    "start": "serve -s ."
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  }
+}

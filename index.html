@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premier League 23/24 - Painel Analítico & Estatísticas</title>
+    
+    <!-- Google Fonts: Outfit for a modern, geometric, premium sports look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+    /* Primary text color for readability */
+    --text-primary: #222222;
+    /* Adjusted palette for clearer contrast */
+    --pl-purple-dark: #f0f2f5;
+    --pl-purple-mid: #e1e4e8;
+    --pl-purple-light: #d1d5db;
+    --pl-mint: #008f4b;
+    --pl-magenta: #c70063;
+    --pl-cyan: #009399;
+    --pl-yellow: #a8b300;
+    --text-white: #1a1a1a;
+    --text-muted: #5e6c7d;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 143, 75, 0.2);
+    --glass-border-hover: rgba(199, 0, 99, 0.3);
+}
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--pl-purple-light) var(--pl-purple-dark);
+        }
+
+        /* Custom Scrollbar for premium browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--pl-purple-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--pl-purple-light);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--pl-magenta);
+        }
+
+        body {
+            font-family: 'Outfit', 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5; /* Light neutral background for higher contrast */
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* Decorative glowing orbs in the background */
+        .glow-orb-1 {
+            position: absolute;
+            top: 10%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 255, 135, 0.08) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        .glow-orb-2 {
+            position: absolute;
+            top: 50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 0, 127, 0.06) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        header {
+            position: relative;
+            background: linear-gradient(180deg, rgba(12, 0, 20, 0.9) 0%, rgba(29, 0, 44, 0.5) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 25px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 45px;
+            height: 45px;
+            filter: drop-shadow(0 0 8px rgba(0, 255, 135, 0.6));
+        }
+
+        .header-title-container h1 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(90deg, #ffffff 0%, var(--pl-mint) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-title-container p {
+            font-size: 12px;
+            color: var(--pl-cyan);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+        }
+
+        .header-badge {
+            background: linear-gradient(135deg, var(--pl-magenta) 0%, #c4005d 100%);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        main {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Introduction Card styling */
+        .intro-card {
+            background: linear-gradient(135deg, rgba(29, 0, 44, 0.75) 0%, rgba(12, 0, 20, 0.9) 100%);
+            border: 1px solid var(--glass-border);
+            padding: 35px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .intro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--pl-mint), var(--pl-cyan));
+        }
+
+        .intro-text h2 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--pl-mint);
+        }
+
+        .intro-text p {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .intro-highlights {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .intro-tag {
+            background: rgba(0, 255, 135, 0.1);
+            border: 1px solid rgba(0, 255, 135, 0.25);
+            color: var(--pl-mint);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .intro-tag.cyan {
+            background: rgba(4, 245, 255, 0.1);
+            border: 1px solid rgba(4, 245, 255, 0.25);
+            color: var(--pl-cyan);
+        }
+
+        .intro-stats-summary {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .summary-item span:first-child {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .summary-item span:last-child {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* KPI Cards Grid styling */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .kpi-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: transparent;
+            transition: background 0.3s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--glass-border-hover);
+            box-shadow: 0 15px 30px rgba(255, 0, 127, 0.15);
+        }
+
+        .kpi-card:hover::after {
+            background: linear-gradient(90deg, var(--pl-magenta), var(--pl-cyan));
+        }
+
+        .kpi-info h3 {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .kpi-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--pl-magenta); /* Bright magenta for numbers */
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .kpi-subtext {
+            font-size: 12px;
+            color: var(--pl-mint);
+            font-weight: 500;
+        }
+
+        .kpi-icon-container {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card:hover .kpi-icon-container {
+            background: rgba(0, 255, 135, 0.1);
+            color: var(--pl-mint) !important;
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Charts Section Layout */
+        .section-title-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--pl-mint); /* Highlight section titles */
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title i {
+            color: var(--pl-mint);
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: var(--pl-cyan);
+        }
+
+        /* Chart Card Layout */
+        .container-grafico {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 45px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+            backdrop-filter: blur(12px);
+            transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+            position: relative;
+        }
+
+        .container-grafico:hover {
+            border-color: rgba(0, 255, 135, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 255, 135, 0.08);
+            transform: translateY(-3px);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 15px;
+        }
+
+        .chart-title-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .chart-number {
+            font-size: 15px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--pl-magenta) 0%, var(--pl-purple-light) 100%);
+            color: var(--pl-mint);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(255, 0, 127, 0.3);
+        }
+
+        .container-grafico h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--pl-cyan); /* Use cyan for chart titles */
+            letter-spacing: 0.2px;
+        }
+
+        .chart-category-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--pl-cyan);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .area-grafico {
+            width: 100%;
+            background: rgba(12, 0, 20, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .area-grafico iframe {
+            display: block;
+            width: 100%;
+            border: none;
+            overflow: hidden;
+        }
+
+        /* Loader inside the chart area */
+        .chart-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--pl-purple-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            z-index: 10;
+            transition: opacity 0.5s ease-out, pointer-events 0.5s;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 255, 135, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--pl-mint);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .chart-loader p {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Description block at the bottom of each chart */
+        .descricao {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-top: 25px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-left: 4px solid var(--pl-mint);
+            border-radius: 0 10px 10px 0;
+            border-top: 1px solid rgba(255,255,255,0.02);
+            border-right: 1px solid rgba(255,255,255,0.02);
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .descricao strong {
+            color: var(--pl-mint);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        footer {
+            background: linear-gradient(360deg, #07000b 0%, var(--pl-purple-dark) 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 80px;
+        }
+
+        footer p {
+            margin-bottom: 10px;
+        }
+
+        .footer-logo {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 15px;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .footer-logo:hover {
+            opacity: 1;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .footer-links a {
+            color: var(--pl-cyan);
+            text-decoration: none;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            color: var(--pl-mint);
+            text-decoration: underline;
+        }
+
+        /* Grid for side-by-side small charts */
+        .chart-flex-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 1024px) {
+            .intro-card {
+                grid-template-columns: 1fr;
+            }
+            .chart-flex-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            .container-grafico {
+                padding: 20px;
+            }
+            .container-grafico h2 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Glowing backdrop decorations -->
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+
+    <header>
+        <div class="header-brand">
+            <!-- Official Premier League Crown Lion SVG for clean, fast vector rendering -->
+            <svg class="header-logo" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M479.5 256C479.5 379.4 379.4 479.5 256 479.5C132.6 479.5 32.5 379.4 32.5 256C32.5 132.6 132.6 32.5 256 32.5C379.4 32.5 479.5 132.6 479.5 256Z" fill="#38003C" stroke="#00FF87" stroke-width="8"/>
+                <path d="M256 95L283 145H229L256 95Z" fill="#00FF87"/>
+                <path d="M256 130L200 230H312L256 130Z" fill="#00FF87"/>
+                <path d="M256 220C280.853 220 301 199.853 301 175C301 150.147 280.853 130 256 130C231.147 130 211 150.147 211 175C211 199.853 231.147 220 256 220Z" fill="#38003C"/>
+                <path d="M256 385C310.124 385 354 341.124 354 287C354 232.876 310.124 189 256 189C201.876 189 158 232.876 158 287C158 341.124 201.876 385 256 385Z" fill="#00FF87"/>
+                <path d="M256 350C290.798 350 319 321.798 319 287C319 252.202 290.798 224 256 224C221.202 224 193 252.202 193 287C193 321.798 221.202 350 256 350Z" fill="#38003C"/>
+            </svg>
+            <div class="header-title-container">
+                <h1>PL ANALYTICS 23/24</h1>
+                <p>Estatísticas & Análise Visual de Dados</p>
+            </div>
+        </div>
+        <div class="header-badge">
+            <i class="fa-solid fa-trophy" style="color: var(--pl-yellow); margin-right: 8px;"></i>
+            TEMPORADA 23/24
+        </div>
+    </header>
+
+    <main>
+
+        <!-- Dynamic Introduction Card -->
+        <div class="intro-card">
+            <div class="intro-text">
+                <h2>Análise da Premier League 2023/2024</h2>
+                <p>
+                    Este painel apresenta uma análise estatística e visual abrangente sobre uma das temporadas mais disputadas da história recente da Premier League. Os dados brutos das 380 partidas foram processados, agregados e tratados utilizando a biblioteca Pandas em ambiente Python, estruturando as principais métricas de performance dos clubes para as visualizações interativas abaixo.
+                </p>
+                <div class="intro-highlights">
+                    <span class="intro-tag"><i class="fa-brands fa-python" style="margin-right: 5px;"></i> Pandas & Python</span>
+                    <span class="intro-tag cyan"><i class="fa-solid fa-chart-line" style="margin-right: 5px;"></i> Observable Plot</span>
+                    <span class="intro-tag" style="background: rgba(255,0,127,0.1); border-color: rgba(255,0,127,0.25); color: var(--pl-magenta);"><i class="fa-solid fa-bolt" style="margin-right: 5px;"></i> Análise Tática</span>
+                </div>
+            </div>
+            <div class="intro-stats-summary">
+                <div class="summary-item">
+                    <span>Partidas Disputadas</span>
+                    <span>380 / 380</span>
+                </div>
+                <div class="summary-item">
+                    <span>Gols Marcados</span>
+                    <span style="color: var(--pl-mint);">1.246 (Recorde!)</span>
+                </div>
+                <div class="summary-item">
+                    <span>Média Gols / Jogo</span>
+                    <span>3,28</span>
+                </div>
+                <div class="summary-item">
+                    <span>Campeão</span>
+                    <span style="color: var(--pl-cyan);">Manchester City 🏆</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 Premium KPI Stat Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-info">
+                    <h3>Gols Totais</h3>
+                    <div class="kpi-number" data-target="1246">0</div>
+                    <div class="kpi-subtext">Recorde histórico da liga</div>
+                </div>
+                <div class="kpi-icon-container" style="color: var(--pl-mint);">
+                    <i class="fa-solid fa-soccer-ball"></i>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-info">
+                    <h3>Média de Gols</h3>
+                    <div class="kpi-number" data-target="3.28" data-decimals="2">0</div>
+                    <div class="kpi-subtext">3,28 gols por partida</div>
+                </div>
+                <div class="kpi-icon-container" style="color: var(--pl-cyan);">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-info">
+                    <h3>Maior Gasto</h3>
+                    <div class="kpi-number" data-target="464">0</div>
+                    <div class="kpi-subtext">€464M+ bruto (Chelsea)</div>
+                </div>
+                <div class="kpi-icon-container" style="color: var(--pl-yellow);">
+                    <i class="fa-solid fa-euro-sign"></i>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-info">
+                    <h3>Campeão (Ptos)</h3>
+                    <div class="kpi-number" data-target="91">0</div>
+                    <div class="kpi-subtext">Man City (Tetra Histórico)</div>
+                </div>
+                <div class="kpi-icon-container" style="color: var(--pl-magenta);">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title-container">
+            <h2 class="section-title">
+                <i class="fa-solid fa-chart-column"></i> Visualizações Analíticas do Campeonato
+            </h2>
+            <span class="section-subtitle">Selecione e explore os gráficos de dados</span>
+        </div>
+
+        <!-- 1. Distribuição de Resultados -->
+        <div class="container-grafico">
+            <div class="chart-header">
+                <div class="chart-title-wrapper">
+                    <span class="chart-number">01</span>
+                    <div>
+                        <h2>Vitórias, Empates e Derrotas por Time</h2>
+                        <span style="font-size: 12px; color: var(--text-muted);">Balanço Geral de Desempenho</span>
+                    </div>
+                </div>
+                <span class="chart-category-badge">Resultados</span>
+            </div>
+            <div class="area-grafico" style="height: 600px;">
+                <div class="chart-loader">
+                    <div class="spinner"></div>
+                    <p>Carregando dados da Premier League...</p>
+                </div>
+                <iframe src="https://observablehq.com/embed/a0653b542dfc6970?cells=plotComparacaoTriplaHorizontalFora" height="600" scrolling="no" onload="hideLoader(this)"></iframe>
+            </div>
+            <p class="descricao">
+                <strong>Análise de Performance:</strong>
+                Este gráfico de barras empilhadas triplo apresenta a distribuição exata de Vitórias (V - em verde), Empates (E - em amarelo) e Derrotas (D - em vermelho) para cada uma das 20 equipes do campeonato. A visualização evidencia de forma imediata a impressionante regularidade de Manchester City e Arsenal, que mantiveram colunas verdes predominantes, em contraste gritante com os clubes rebaixados (Sheffield, Burnley e Luton), cujas barras são dominadas pelo vermelho das derrotas.
+            </p>
+        </div>
+
+        <!-- 2. Comparação de Faltas -->
+        <div class="container-grafico">
+            <div class="chart-header">
+                <div class="chart-title-wrapper">
+                    <span class="chart-number">02</span>
+                    <div>
+                        <h2>Comparação de Faltas: Mandante vs Visitante</h2>
+                        <span style="font-size: 12px; color: var(--text-muted);">Análise de Agressividade Tática</span>
+                    </div>
+                </div>
+                <span class="chart-category-badge">Disciplina</span>
+            </div>
+            <div class="area-grafico" style="height: 600px;">
+                <div class="chart-loader">
+                    <div class="spinner"></div>
+                    <p>Carregando dados da Premier League...</p>
+                </div>
+                <iframe src="https://observablehq.com/embed/a0653b542dfc6970?cells=plotComparacaoFaltasHorizontal" height="600" scrolling="no" onload="hideLoader(this)"></iframe>
+            </div>
+            <p class="descricao">
+                <strong>Análise Disciplinar:</strong>
+                Uma análise comparativa de faltas cometidas pelas equipes em seus domínios (Casa) versus fora de seus domínios (Fora). A orientação horizontal otimiza a leitura e a comparação das linhas. A estatística revela um padrão de comportamento tático clássico: para a ampla maioria dos clubes, a quantidade de infrações cometidas jogando fora de casa é sensivelmente maior, uma estratégia comumente adotada para quebrar o ritmo ofensivo do time mandante.
+            </p>
+        </div>
+
+        <!-- 3. Clubes que mais investiram -->
+        <div class="container-grafico">
+            <div class="chart-header">
+                <div class="chart-title-wrapper">
+                    <span class="chart-number">03</span>
+                    <div>
+                        <h2>Clubes que Mais Investiram no Campeonato</h2>
+                        <span style="font-size: 12px; color: var(--text-muted);">Gasto Bruto com Contratações (Em Milhões de Euros)</span>
+                    </div>
+                </div>
+                <span class="chart-category-badge">Financeiro</span>
+            </div>
+            <div class="area-grafico" style="height: 600px;">
+                <div class="chart-loader">
+                    <div class="spinner"></div>
+                    <p>Carregando dados da Premier League...</p>
+                </div>
+                <iframe src="https://observablehq.com/embed/a0653b542dfc6970?cells=plotInvestimentosHorizontal" height="600" scrolling="no" onload="hideLoader(this)"></iframe>
+            </div>
+            <p class="descricao">
+                <strong>Análise Econômica:</strong>
+                O poderio financeiro da Premier League traduzido em dados gráficos de gastos brutos na janela de transferências da temporada. É notável como Chelsea e Tottenham encabeçam a lista com aportes extraordinários, seguidos de perto pelo 'Big Six'. A disparidade em relação a equipes como Luton Town e Everton demonstra o enorme abismo financeiro entre a elite orçamentária do futebol europeu e os clubes focados em sobrevivência na liga.
+            </p>
+        </div>
+
+        <!-- 4. Comparação de Chutes -->
+        <div class="container-grafico">
+            <div class="chart-header">
+                <div class="chart-title-wrapper">
+                    <span class="chart-number">04</span>
+                    <div>
+                        <h2>Comparação de Finalizações: Dentro vs Fora de Casa</h2>
+                        <span style="font-size: 12px; color: var(--text-muted);">Relação de Chutes Criados</span>
+                    </div>
+                </div>
+                <span class="chart-category-badge">Ofensiva</span>
+            </div>
+            <div class="area-grafico" style="height: 600px;">
+                <div class="chart-loader">
+                    <div class="spinner"></div>
+                    <p>Carregando dados da Premier League...</p>
+                </div>
+                <iframe src="https://observablehq.com/embed/a0653b542dfc6970?cells=plotComparacaoDumbbell" height="600" scrolling="no" onload="hideLoader(this)"></iframe>
+            </div>
+            <p class="descricao">
+                <strong>Análise Tática de Chutes:</strong>
+                Este gráfico de halteres (Dumbbell Plot) contrasta as médias de finalizações por partida. Os marcadores azuis representam os chutes dados sob seus domínios (Casa) e os marcadores laranja representam os chutes dados fora de casa. Ele mostra perfeitamente o fator campo: a ampla maioria das equipes consegue criar significativamente mais chances diante de sua torcida. Clubes altamente agressivos mantêm as duas marcas próximas e no topo da tabela de volume.
+            </p>
+        </div>
+
+        <!-- 5. Comparação de Escanteios -->
+        <div class="container-grafico">
+            <div class="chart-header">
+                <div class="chart-title-wrapper">
+                    <span class="chart-number">05</span>
+                    <div>
+                        <h2>Comparação de Escanteios Conquistados: Casa vs Fora</h2>
+                        <span style="font-size: 12px; color: var(--text-muted);">Indicador de Pressão Ofensiva e Bola Parada</span>
+                    </div>
+                </div>
+                <span class="chart-category-badge">Ofensiva</span>
+            </div>
+            <div class="area-grafico" style="height: 600px;">
+                <div class="chart-loader">
+                    <div class="spinner"></div>
+                    <p>Carregando dados da Premier League...</p>
+                </div>
+                <iframe src="https://observablehq.com/embed/a0653b542dfc6970?cells=plotComparacaoEscanteiosEstilizado" height="600" scrolling="no" onload="hideLoader(this)"></iframe>
+            </div>
+            <p class="descricao">
+                <strong>Análise de Linha de Fundo:</strong>
+                Escanteios acumulados divididos por mandatos (Casa em verde, Fora em vermelho). O volume de escanteios serve como um excelente termômetro para identificar propostas de jogo que utilizam amplitude nas pontas e velocidade de linha de fundo, forçando a zaga adversária a jogar a bola pela linha de fundo. Equipes dominantes de posse de bola e presença de área tendem a acumular números avassaladores nesta métrica.
+            </p>
+        </div>
+
+        <!-- Row for Side by Side Leader Comparisons -->
+        <div class="chart-flex-row">
+            
+            <!-- 6. Comparação Campeão vs Vice -->
+            <div class="container-grafico" style="margin-bottom: 0;">
+                <div class="chart-header">
+                    <div class="chart-title-wrapper">
+                        <span class="chart-number">06</span>
+                        <div>
+                            <h2>Campeão vs Vice: Evolução de Pontos</h2>
+                            <span style="font-size: 12px; color: var(--text-muted);">Man City vs Arsenal Rodada a Rodada</span>
+                        </div>
+                    </div>
+                    <span class="chart-category-badge" style="color: var(--pl-magenta);">Título</span>
+                </div>
+                <div class="area-grafico" style="height: 500px;">
+                    <div class="chart-loader">
+                        <div class="spinner"></div>
+                        <p>Carregando dados da Premier League...</p>
+                    </div>
+                    <iframe src="https://observablehq.com/embed/a0653b542dfc6970?cells=plotComparacaoCampeaoVice" height="500" scrolling="no" onload="hideLoader(this)"></iframe>
+                </div>
+                <p class="descricao">
+                    <strong>A Corrida Pelo Título:</strong>
+                    Gráfico temporal interativo detalhando a pontuação acumulada das duas maiores potências do campeonato durante as 38 rodadas. Observa-se um equilíbrio absurdo, com o Arsenal (linha vermelha) liderando em diversos momentos da competição, até a arrancada implacável do Manchester City (linha azul) na reta final para consolidar o histórico tetracampeonato consecutivo sob o comando de Pep Guardiola.
+                </p>
+            </div>
+
+            <!-- 7. Comparação de Investimento Campeão vs Vice -->
+            <div class="container-grafico" style="margin-bottom: 0;">
+                <div class="chart-header">
+                    <div class="chart-title-wrapper">
+                        <span class="chart-number">07</span>
+                        <div>
+                            <h2>Comparação de Orçamento: Campeão vs Vice</h2>
+                            <span style="font-size: 12px; color: var(--text-muted);">Investimento Bruto na Janela (Milhões €)</span>
+                        </div>
+                    </div>
+                    <span class="chart-category-badge" style="color: var(--pl-magenta);">Financeiro</span>
+                </div>
+                <div class="area-grafico" style="height: 350px;">
+                    <div class="chart-loader">
+                        <div class="spinner"></div>
+                        <p>Carregando dados da Premier League...</p>
+                    </div>
+                    <iframe src="https://observablehq.com/embed/a0653b542dfc6970?cells=plotComparacaoInvestimento" height="350" scrolling="no" onload="hideLoader(this)"></iframe>
+                </div>
+                <p class="descricao" style="margin-top: 15px;">
+                    <strong>Eficiência de Capital:</strong>
+                    Este gráfico de barras direta compara as finanças em contratações dos dois maiores clubes da liga. Manchester City registrou €241.1M em investimentos contra €234.94M do Arsenal FC. O equilíbrio financeiro de contratações reforça que a disputa de alto nível na liga se reflete também na capacidade equivalente de investimento para a formação de elencos de classe mundial.
+                </p>
+            </div>
+            
+        </div>
+
+        <!-- 8. Relação Investimento vs Posição Final -->
+        <div class="container-grafico" style="margin-top: 45px;">
+            <div class="chart-header">
+                <div class="chart-title-wrapper">
+                    <span class="chart-number">08</span>
+                    <div>
+                        <h2>Relação: Investimento vs Posição Final</h2>
+                        <span style="font-size: 12px; color: var(--text-muted);">Eficiência Financeira por Posição na Tabela</span>
+                    </div>
+                </div>
+                <span class="chart-category-badge">Eficiência</span>
+            </div>
+            <div class="area-grafico" style="height: 500px;">
+                <div class="chart-loader">
+                    <div class="spinner"></div>
+                    <p>Carregando dados da Premier League...</p>
+                </div>
+                <iframe src="https://observablehq.com/embed/a0653b542dfc6970?cells=plotInvestimentoVsPosicao" height="500" scrolling="no" onload="hideLoader(this)"></iframe>
+            </div>
+            <p class="descricao">
+                <strong>Eficiência de Gestão:</strong>
+                A métrica de ouro para análise de gestão desportiva. Este gráfico ordena os times do 1º ao 20º colocado e exibe o investimento brut em transferências. Barras verdes indicam gastos elevados (acima de €150M), enquanto barras vermelhas representam aportes mais conservadores. Fica visível o sucesso de equipes de altíssima eficiência que conquistaram posições elevadas gastando muito menos, em contraste com investimentos multimilionários que renderam campanhas frustrantes no meio da tabela.
+            </p>
+        </div>
+
+    </main>
+
+    <footer>
+        <svg class="footer-logo" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M479.5 256C479.5 379.4 379.4 479.5 256 479.5C132.6 479.5 32.5 379.4 32.5 256C32.5 132.6 132.6 32.5 256 32.5C379.4 32.5 479.5 132.6 479.5 256Z" fill="#1d002c" stroke="#ff007f" stroke-width="4"/>
+            <path d="M256 120L210 210H302L256 120Z" fill="#ff007f"/>
+            <path d="M256 260C271 260 283 248 283 233C283 218 271 206 256 206C241 206 229 218 229 233C229 248 241 260 256 260Z" fill="#1d002c"/>
+            <path d="M256 370C295.124 370 327 338.124 327 299C327 259.876 295.124 228 256 228C216.876 228 185 259.876 185 299C185 338.124 216.876 370 256 370Z" fill="#ff007f"/>
+        </svg>
+        <p>&copy; 2026 Dashboard Premier League 23/24. Desenvolvido como projeto acadêmico de Análise de Dados e Sistemas.</p>
+        <p style="font-size: 11px; opacity: 0.7;">Dados processados via Pandas e visualizações construídas com a biblioteca Observable Plot.</p>
+        <div class="footer-links">
+            <a href="https://observablehq.com/d/a0653b542dfc6970" target="_blank"><i class="fa-solid fa-code"></i> Notebook Original</a>
+            <a href="https://github.com/covid19pb" target="_blank"><i class="fa-brands fa-github"></i> Repositório de Origem</a>
+        </div>
+    </footer>
+
+    <!-- Include Local Javascript logic -->
+    <script src="graficos.js"></script>
+    <script>
+        // Inline function to handle removing chart iframe loading spinners
+        function hideLoader(iframe) {
+            const loader = iframe.previousElementSibling;
+            if (loader && loader.classList.contains('chart-loader')) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>
